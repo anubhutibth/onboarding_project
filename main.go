@@ -23,6 +23,7 @@ var Students []Student
 func main() {
 	Students = []Student{
 		{StudentId: "1", Name: "idk", Age: 6, Class: "nursery", Subject: "Poem"},
+		{StudentId: "2", Name: "wth", Age: 8, Class: "one", Subject: "Maths"},
 	}
 	handleRequests()
 }
@@ -36,6 +37,7 @@ func handleRequests() {
 	myRouter := mux.NewRouter().StrictSlash(true)
 	myRouter.HandleFunc("/", homepage)
 	myRouter.HandleFunc("/all", returnAllStudents)
+	myRouter.HandleFunc("/student/{studentId}", returnSingleStudent)
 	myRouter.HandleFunc("/student", addNewStudent).Methods("POST")
 	log.Fatal(http.ListenAndServe(":10000", myRouter))
 }
@@ -56,4 +58,17 @@ func addNewStudent(w http.ResponseWriter, r *http.Request) {
 func returnAllStudents(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Endpoint hit3")
 	json.NewEncoder(w).Encode(Students)
+}
+
+func returnSingleStudent(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Endpoint hit4")
+	vars := mux.Vars(r)
+	key := vars["studentId"]
+	//fmt.Fprintf(w, "Key: "+key)
+
+	for _, student := range Students {
+		if student.StudentId == key {
+			json.NewEncoder(w).Encode(student)
+		}
+	}
 }
